@@ -1,0 +1,42 @@
+[
+  {
+    "account_id": "acct_meridian",
+    "name": "Meridian Health",
+    "industry": "healthcare",
+    "segment": "mid-market",
+    "arr": 96000,
+    "csm_owner": "Jordan Vance"
+  },
+  {
+    "account_id": "acct_brightline",
+    "name": "Brightline Logistics",
+    "industry": "logistics",
+    "segment": "enterprise",
+    "arr": 210000,
+    "csm_owner": "Aisha Rahman"
+  },
+  {
+    "account_id": "acct_fernwood",
+    "name": "Fernwood Capital",
+    "industry": "financial_services",
+    "segment": "enterprise",
+    "arr": 175000,
+    "csm_owner": "Jordan Vance"
+  },
+  {
+    "account_id": "acct_pinecrest",
+    "name": "Pinecrest Robotics",
+    "industry": "robotics_manufacturing",
+    "segment": "smb",
+    "arr": 42000,
+    "csm_owner": "Theo Lindqvist"
+  },
+  {
+    "account_id": "acct_solace",
+    "name": "Solace Media",
+    "industry": "media",
+    "segment": "mid-market",
+    "arr": 88000,
+    "csm_owner": "Aisha Rahman"
+  }
+]

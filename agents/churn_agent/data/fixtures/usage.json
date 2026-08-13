@@ -1,0 +1,7 @@
+[
+  { "account_id": "acct_meridian", "mau_prior": 180, "mau_current": 110 },
+  { "account_id": "acct_brightline", "mau_prior": 300, "mau_current": 410 },
+  { "account_id": "acct_fernwood", "mau_prior": 150, "mau_current": 145 },
+  { "account_id": "acct_pinecrest", "mau_prior": 40, "mau_current": 25 },
+  { "account_id": "acct_solace", "mau_prior": 200, "mau_current": 205 }
+]

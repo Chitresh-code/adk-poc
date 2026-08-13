@@ -8,7 +8,7 @@ Agents are built one at a time: each one has to actually work end to end in `adk
 |---|-------|---------------|--------|
 | 1 | RFP / Security Questionnaire | Reads an incoming RFP or security questionnaire, breaks it into individual questions, and drafts grounded answers from past responses and product docs for presales to review. | **built, verified end to end against a live model call**, see [agent-1-rfp-agent.md](agent-1-rfp-agent.md) |
 | 2 | Account Research & Outreach | Watches for buying signals, researches accounts, maps buyers, and drafts personalized outreach for a rep to approve before anything gets sent. | **built, Pub/Sub emulator round trip verified, live model run not yet verified**, see [agent-2-account-research-agent.md](agent-2-account-research-agent.md) |
-| 3 | CS Churn & Expansion | Watches product usage, support tickets, and sentiment, flags churn risk early, and drafts QBR prep and cross-sell notes. | not started |
+| 3 | CS Churn & Expansion | Watches product usage, support tickets, and sentiment, flags churn risk early, and drafts QBR prep and cross-sell notes. | **built, deterministic tool suite verified, live model run not yet verified**, see [agent-3-churn-agent.md](agent-3-churn-agent.md) |
 | 4 | RevOps CRM Hygiene & Forecasting | Sweeps the CRM for missing, stale, or duplicate data, flags stalled deals, and sharpens the forecast, starting read-only and earning write access over time. | not started |
 | 5 | Call Analysis & Coaching | Transcribes and scores sales calls against a methodology, surfaces competitor mentions and deal risks, and updates the CRM. | not started |
 
@@ -63,7 +63,16 @@ agents/
       publish_fake_signals.py   # seeds the Pub/Sub emulator topic
     tests/
       test_tools.py
-  (churn_agent/, revops_agent/, call_coaching_agent/: later)
+  churn_agent/
+    agent.py                # same SequentialAgent shape, see agent-3 doc
+    tools/
+      scoring.py               # deterministic risk scoring, no model call
+    data/
+      fixtures/                # account/usage/ticket/sentiment fixtures
+      corpus/                   # retention/expansion plays, chromadb-indexed
+    tests/
+      test_tools.py
+  (revops_agent/, call_coaching_agent/: later)
 docs/
   plan.md                # this file
   agent-1-rfp-agent.md

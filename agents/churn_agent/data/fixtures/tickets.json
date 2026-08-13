@@ -1,0 +1,34 @@
+[
+  {
+    "account_id": "acct_meridian",
+    "ticket_id": "T-1042",
+    "severity": "critical",
+    "status": "open",
+    "opened_at": "2026-07-28",
+    "subject": "Nightly data sync to reporting warehouse failing intermittently"
+  },
+  {
+    "account_id": "acct_brightline",
+    "ticket_id": "T-1029",
+    "severity": "low",
+    "status": "closed",
+    "opened_at": "2026-06-10",
+    "subject": "Question about SSO group mapping, resolved same day"
+  },
+  {
+    "account_id": "acct_fernwood",
+    "ticket_id": "T-1050",
+    "severity": "medium",
+    "status": "open",
+    "opened_at": "2026-08-02",
+    "subject": "Request to increase seat count for a new analytics team"
+  },
+  {
+    "account_id": "acct_pinecrest",
+    "ticket_id": "T-1038",
+    "severity": "high",
+    "status": "open",
+    "opened_at": "2026-07-15",
+    "subject": "API rate limits blocking overnight telemetry ingest"
+  }
+]

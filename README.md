@@ -8,7 +8,7 @@ A set of agents built on Google's Agent Development Kit (ADK), each one handling
 - Keeping the CRM clean
 - Coaching sales calls
 
-Agents are added one at a time. See [`docs/plan.md`](docs/plan.md) for what's built, what's planned, and the architecture decisions that apply across all of them, [`docs/agent-1-rfp-agent.md`](docs/agent-1-rfp-agent.md) for how the RFP agent works, and [`docs/agent-2-account-research-agent.md`](docs/agent-2-account-research-agent.md) for the account research and outreach agent.
+Agents are added one at a time. See [`docs/plan.md`](docs/plan.md) for what's built, what's planned, and the architecture decisions that apply across all of them, [`docs/agent-1-rfp-agent.md`](docs/agent-1-rfp-agent.md) for how the RFP agent works, [`docs/agent-2-account-research-agent.md`](docs/agent-2-account-research-agent.md) for the account research and outreach agent, and [`docs/agent-3-churn-agent.md`](docs/agent-3-churn-agent.md) for the CS churn and expansion agent.
 
 ## Prerequisites
 
@@ -98,11 +98,13 @@ agents/
     retrieval.py                     # shared chromadb helper
   rfp_agent/                         # see docs/agent-1-rfp-agent.md
   account_research_agent/            # see docs/agent-2-account-research-agent.md
+  churn_agent/                       # see docs/agent-3-churn-agent.md
   tests/                             # live end-to-end tests, one per agent, see Tests below
 docs/
   plan.md                            # roadmap and architecture decisions
   agent-1-rfp-agent.md               # RFP agent design and walkthrough
   agent-2-account-research-agent.md  # account research agent design and walkthrough
+  agent-3-churn-agent.md             # CS churn and expansion agent design and walkthrough
 ```
 
 ## Tests

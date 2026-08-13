@@ -1,0 +1,32 @@
+[
+  {
+    "account_id": "acct_meridian",
+    "score": -0.5,
+    "trend": "declining",
+    "note": "VP of Platform Engineering flagged recurring sync failures on the last check-in call; mentioned evaluating alternatives."
+  },
+  {
+    "account_id": "acct_brightline",
+    "score": 0.6,
+    "trend": "improving",
+    "note": "Ops lead asked about the advanced routing add-on during the last QBR."
+  },
+  {
+    "account_id": "acct_fernwood",
+    "score": -0.25,
+    "trend": "declining",
+    "note": "Executive sponsor changed roles internally; new stakeholder hasn't engaged with CS yet."
+  },
+  {
+    "account_id": "acct_pinecrest",
+    "score": -0.4,
+    "trend": "declining",
+    "note": "Head of IT escalated the open API rate-limit ticket directly to their AE."
+  },
+  {
+    "account_id": "acct_solace",
+    "score": 0.1,
+    "trend": "stable",
+    "note": "No notable feedback since last quarter's renewal."
+  }
+]
