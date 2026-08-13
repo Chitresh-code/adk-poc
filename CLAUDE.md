@@ -13,8 +13,12 @@ come in) that should not be re-derived or re-litigated per change.
 
 ## Development
 
-- Package manager: `uv`. Each agent under `agents/<name>/` has its own `pyproject.toml`; run
-  `uv sync` inside that folder before running or testing it.
+- Package manager: `uv`. One shared environment for every agent: `agents/pyproject.toml` holds
+  every agent's dependencies, `agents/.venv` is the one venv all of them run in. Run `uv sync`
+  from `agents/` before running or testing anything; don't add a per-agent `pyproject.toml`.
+- One shared `.env` too: `agents/.env` (copy from `agents/.env.example`). ADK's dotenv loader
+  walks up from `agents/<name>/` to find it, so every agent picks up the same config with no
+  per-agent copy.
 - Run the UI from the repo's `agents/` directory so `adk web` discovers every agent folder:
   `uv run adk web . --port 8080 --reload_agents`.
 - Model access goes through `agents/common/model.py`'s `get_model()`, never a hardcoded model
