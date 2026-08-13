@@ -7,7 +7,7 @@ Agents are built one at a time: each one has to actually work end to end in `adk
 | # | Agent | What it does | Status |
 |---|-------|---------------|--------|
 | 1 | RFP / Security Questionnaire | Reads an incoming RFP or security questionnaire, breaks it into individual questions, and drafts grounded answers from past responses and product docs for presales to review. | **built, verified end to end against a live model call**, see [agent-1-rfp-agent.md](agent-1-rfp-agent.md) |
-| 2 | Account Research & Outreach | Watches for buying signals, researches accounts, maps buyers, and drafts personalized outreach for a rep to approve before anything gets sent. | not started |
+| 2 | Account Research & Outreach | Watches for buying signals, researches accounts, maps buyers, and drafts personalized outreach for a rep to approve before anything gets sent. | **built, Pub/Sub emulator round trip verified, live model run not yet verified**, see [agent-2-account-research-agent.md](agent-2-account-research-agent.md) |
 | 3 | CS Churn & Expansion | Watches product usage, support tickets, and sentiment, flags churn risk early, and drafts QBR prep and cross-sell notes. | not started |
 | 4 | RevOps CRM Hygiene & Forecasting | Sweeps the CRM for missing, stale, or duplicate data, flags stalled deals, and sharpens the forecast, starting read-only and earning write access over time. | not started |
 | 5 | Call Analysis & Coaching | Transcribes and scores sales calls against a methodology, surfaces competitor mentions and deal risks, and updates the CRM. | not started |
@@ -43,6 +43,7 @@ agents/
   .env                    # shared config, copy from .env.example
   common/
     model.py               # get_model(), shared across all agents
+    retrieval.py             # shared chromadb helper, one collection per agent
   rfp_agent/
     agent.py                # root_agent = SequentialAgent(...)
     prompt.py
@@ -52,7 +53,17 @@ agents/
       corpus/                # seeded past-answers + product-doc fixtures
     tests/
       test_tools.py            # self-check for deterministic tool logic
-  (account_research_agent/, churn_agent/, revops_agent/, call_coaching_agent/: later)
+  account_research_agent/
+    agent.py                # same SequentialAgent shape, see agent-2 doc
+    tools/
+    data/
+      fixtures/                # account/contact fixtures
+      corpus/                   # case-study proof points, chromadb-indexed
+    scripts/
+      publish_fake_signals.py   # seeds the Pub/Sub emulator topic
+    tests/
+      test_tools.py
+  (churn_agent/, revops_agent/, call_coaching_agent/: later)
 docs/
   plan.md                # this file
   agent-1-rfp-agent.md
@@ -67,7 +78,7 @@ docs/
 **Google Cloud emulators**: what's actually real, what's emulated, what's skipped. Gemini itself has no local emulator; every agent always calls the real API, that part can't be faked. Emulators only make sense for the infra around the model:
 
 - **Firestore emulator** (`gcloud emulators firestore start`): stands in for the system of record starting at Agent 4 (RevOps CRM hygiene), where the read-only-then-write story is the whole point. Agent 3 can reuse it for account state if useful.
-- **Pub/Sub emulator** (`gcloud emulators pubsub start`): stands in for a buying-signal event stream starting at Agent 2; a small local script publishes fake signals instead of a real intent-data vendor.
+- **Pub/Sub emulator** (`gcloud beta emulators pubsub start`, still under the beta command track as of gcloud 580.0.0; needs a real Java 7+ JRE on `PATH`, macOS's bundled `java` stub doesn't count, `brew install openjdk` if `java -version` fails): stands in for a buying-signal event stream starting at Agent 2; a small local script publishes fake signals instead of a real intent-data vendor.
 - **Agent 1 uses neither.** It's local files in, drafted answers out: no database, no message queue, no state that needs to survive between runs. That's not a gap to fill later, it's the correct amount of infra for what the agent does.
 
 **Retrieval**:
@@ -98,4 +109,8 @@ cp .env.example .env    # fill in GOOGLE_API_KEY
 # Google Cloud SDK, only needed once we reach an agent that uses an emulator (Agent 2+)
 brew install --cask google-cloud-sdk
 gcloud components install cloud-firestore-emulator pubsub-emulator
+
+# the Pub/Sub emulator is Java-based; macOS doesn't ship a real JRE by
+# default, only a stub that prompts to install one
+java -version || brew install openjdk
 ```

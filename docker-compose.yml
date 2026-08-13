@@ -1,0 +1,31 @@
+services:
+  adk-agents:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MODEL_PROVIDER=${MODEL_PROVIDER:-google}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GOOGLE_MODEL=${GOOGLE_MODEL:-gemini-2.5-flash}
+      - GOOGLE_EMBEDDING_MODEL=${GOOGLE_EMBEDDING_MODEL:-gemini-embedding-001}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      - OPENAI_REASONING_EFFORT=${OPENAI_REASONING_EFFORT}
+      - PUBSUB_EMULATOR_HOST=pubsub-emulator:8085
+      - PUBSUB_PROJECT_ID=${PUBSUB_PROJECT_ID:-adk-poc-local}
+    volumes:
+      - ./agents:/app/agents
+    depends_on:
+      - pubsub-emulator
+    stdin_open: true
+    tty: true
+
+  pubsub-emulator:
+    image: google/cloud-sdk:emulators
+    command: gcloud beta emulators pubsub start --project=${PUBSUB_PROJECT_ID:-adk-poc-local} --host-port=0.0.0.0:8085
+    ports:
+      - "8085:8085"

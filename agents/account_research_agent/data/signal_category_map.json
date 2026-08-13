@@ -1,0 +1,7 @@
+{
+  "job_posting": ["eng_leadership", "it_ops"],
+  "funding_round": ["finance", "executive"],
+  "executive_change": ["executive"],
+  "pricing_page_visit": ["finance", "eng_leadership"],
+  "competitor_mention": ["executive", "eng_leadership"]
+}

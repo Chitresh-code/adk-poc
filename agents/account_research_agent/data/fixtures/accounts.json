@@ -1,0 +1,37 @@
+[
+  {
+    "account_id": "acct_meridian",
+    "name": "Meridian Health",
+    "industry": "healthcare",
+    "segment": "mid-market",
+    "deal_stage": null
+  },
+  {
+    "account_id": "acct_brightline",
+    "name": "Brightline Logistics",
+    "industry": "logistics",
+    "segment": "enterprise",
+    "deal_stage": "discovery"
+  },
+  {
+    "account_id": "acct_fernwood",
+    "name": "Fernwood Capital",
+    "industry": "financial_services",
+    "segment": "enterprise",
+    "deal_stage": null
+  },
+  {
+    "account_id": "acct_pinecrest",
+    "name": "Pinecrest Robotics",
+    "industry": "robotics_manufacturing",
+    "segment": "smb",
+    "deal_stage": null
+  },
+  {
+    "account_id": "acct_solace",
+    "name": "Solace Media",
+    "industry": "media",
+    "segment": "mid-market",
+    "deal_stage": "evaluation"
+  }
+]

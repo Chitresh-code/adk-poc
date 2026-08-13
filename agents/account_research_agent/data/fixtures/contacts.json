@@ -1,0 +1,72 @@
+[
+  {
+    "contact_id": "c_meridian_1",
+    "account_id": "acct_meridian",
+    "name": "Dana Whitfield",
+    "title": "VP of Platform Engineering",
+    "persona": "eng_leadership"
+  },
+  {
+    "contact_id": "c_meridian_2",
+    "account_id": "acct_meridian",
+    "name": "Raj Patel",
+    "title": "Director of IT Operations",
+    "persona": "it_ops"
+  },
+  {
+    "contact_id": "c_brightline_1",
+    "account_id": "acct_brightline",
+    "name": "Sofia Nakamura",
+    "title": "CFO",
+    "persona": "finance"
+  },
+  {
+    "contact_id": "c_brightline_2",
+    "account_id": "acct_brightline",
+    "name": "Owen Marsh",
+    "title": "CEO",
+    "persona": "executive"
+  },
+  {
+    "contact_id": "c_fernwood_1",
+    "account_id": "acct_fernwood",
+    "name": "Elena Cho",
+    "title": "CTO",
+    "persona": "executive"
+  },
+  {
+    "contact_id": "c_fernwood_2",
+    "account_id": "acct_fernwood",
+    "name": "Marcus Webb",
+    "title": "VP of Engineering",
+    "persona": "eng_leadership"
+  },
+  {
+    "contact_id": "c_pinecrest_1",
+    "account_id": "acct_pinecrest",
+    "name": "Priya Anand",
+    "title": "Head of IT",
+    "persona": "it_ops"
+  },
+  {
+    "contact_id": "c_pinecrest_2",
+    "account_id": "acct_pinecrest",
+    "name": "Tomas Reyes",
+    "title": "VP of Finance",
+    "persona": "finance"
+  },
+  {
+    "contact_id": "c_solace_1",
+    "account_id": "acct_solace",
+    "name": "Ingrid Bauer",
+    "title": "CEO",
+    "persona": "executive"
+  },
+  {
+    "contact_id": "c_solace_2",
+    "account_id": "acct_solace",
+    "name": "Leo Kim",
+    "title": "VP of Engineering",
+    "persona": "eng_leadership"
+  }
+]
