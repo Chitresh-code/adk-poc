@@ -55,6 +55,11 @@ async def retrieve_context(tool_context: ToolContext, k: int = 3) -> dict:
     tool_context.actions.skip_summarization = True
 
     questions = tool_context.state.get("questions")
+    if isinstance(questions, dict):
+        # decompose's output_schema wraps the list (see schemas.QuestionList);
+        # normalize back to a plain list, once, for every step downstream.
+        questions = questions.get("items", [])
+        tool_context.state["questions"] = questions
     if not questions:
         tool_context.state["questions_with_context"] = "[]"
         return {"error": "No questions in state. Run decompose first."}

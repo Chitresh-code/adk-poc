@@ -9,7 +9,7 @@ from google.genai import types
 from common.model import get_model
 
 from . import prompt
-from .schemas import OutreachDraft
+from .schemas import OutreachDraftList
 from .tools.buyers import map_buyers
 from .tools.packaging import assemble_outreach_packet
 from .tools.research import research_account
@@ -55,7 +55,7 @@ draft_agent = LlmAgent(
     name="draft",
     model=get_model(),
     instruction=prompt.DRAFT_INSTRUCTION,
-    output_schema=list[OutreachDraft],
+    output_schema=OutreachDraftList,
     output_key="drafts",
 )
 

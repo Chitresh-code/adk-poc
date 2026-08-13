@@ -24,6 +24,11 @@ async def assemble_outreach_packet(tool_context: ToolContext) -> dict:
 
     mapped_signals = tool_context.state.get("mapped_signals")
     drafts = tool_context.state.get("drafts")
+    if isinstance(drafts, dict):
+        # draft's output_schema wraps the list (see schemas.OutreachDraftList);
+        # normalize back to a plain list before use.
+        drafts = drafts.get("items", [])
+        tool_context.state["drafts"] = drafts
     if not mapped_signals:
         return {"error": "No mapped signals in state. Run buyer mapping first."}
     if not drafts:

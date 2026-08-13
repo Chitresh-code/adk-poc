@@ -9,7 +9,7 @@ from google.genai import types
 from common.model import get_model
 
 from . import prompt
-from .schemas import Draft, Question
+from .schemas import DraftList, QuestionList
 from .tools.intake import parse_document
 from .tools.packaging import assemble_draft
 from .tools.retrieval import retrieve_context
@@ -38,7 +38,7 @@ decompose_agent = LlmAgent(
     name="decompose",
     model=get_model(),
     instruction=prompt.DECOMPOSE_INSTRUCTION,
-    output_schema=list[Question],
+    output_schema=QuestionList,
     output_key="questions",
 )
 
@@ -54,7 +54,7 @@ draft_agent = LlmAgent(
     name="draft",
     model=get_model(),
     instruction=prompt.DRAFT_INSTRUCTION,
-    output_schema=list[Draft],
+    output_schema=DraftList,
     output_key="drafts",
 )
 

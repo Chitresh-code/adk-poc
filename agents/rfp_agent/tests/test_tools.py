@@ -19,6 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from tools import packaging
 from tools.intake import _parse_csv, _parse_docx, _parse_text, _parse_xlsx, parse_document
+from schemas import DraftList, QuestionList
 
 
 def test_parse_text():
@@ -112,7 +113,11 @@ def test_assemble_draft():
         },
     ]
     ctx = _FakeToolContext(
-        {"questions": questions, "drafts": drafts, "source_filename": "test.md"}
+        {
+            "questions": questions,
+            "drafts": {"items": drafts},
+            "source_filename": "test.md",
+        }
     )
     result = asyncio.run(packaging.assemble_draft(ctx))
     assert "error" not in result, result
@@ -121,6 +126,7 @@ def test_assemble_draft():
     assert "Yes, SAML SSO is supported." in markdown
     assert "**Needs SME review:** yes, route to Presales" in markdown, markdown
     assert ctx.actions.skip_summarization is True
+    assert ctx.state["drafts"] == drafts
     assert ctx.state["final_document"] == markdown
 
 
@@ -129,6 +135,11 @@ def test_assemble_draft_missing_state():
     result = asyncio.run(packaging.assemble_draft(ctx))
     assert "error" in result
     assert ctx.actions.skip_summarization is True
+
+
+def test_output_schemas_have_object_roots():
+    assert QuestionList.model_json_schema()["type"] == "object"
+    assert DraftList.model_json_schema()["type"] == "object"
 
 
 def test_parse_document_pasted_text():

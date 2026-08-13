@@ -31,6 +31,11 @@ async def assemble_draft(tool_context: ToolContext) -> dict:
 
     questions = tool_context.state.get("questions")
     drafts = tool_context.state.get("drafts")
+    if isinstance(drafts, dict):
+        # draft's output_schema wraps the list (see schemas.DraftList);
+        # normalize back to a plain list before use.
+        drafts = drafts.get("items", [])
+        tool_context.state["drafts"] = drafts
     if not questions:
         return {"error": "No questions in state. Run decompose first."}
     if not drafts:

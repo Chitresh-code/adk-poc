@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from tools import buyers, packaging
 from tools.signals import _parse_signal
 from scripts.publish_fake_signals import _should_publish
+from schemas import OutreachDraftList
 
 
 class _FakeActions:
@@ -114,7 +115,9 @@ def test_assemble_outreach_packet():
             "needs_review": False,
         }
     ]
-    ctx = _FakeToolContext({"mapped_signals": mapped_signals, "drafts": drafts})
+    ctx = _FakeToolContext(
+        {"mapped_signals": mapped_signals, "drafts": {"items": drafts}}
+    )
     result = asyncio.run(packaging.assemble_outreach_packet(ctx))
     assert "error" not in result, result
     markdown = result["markdown"]
@@ -122,6 +125,7 @@ def test_assemble_outreach_packet():
     assert "Dana Whitfield" in markdown
     assert "Scaling platform engineering at Meridian" in markdown
     assert ctx.actions.skip_summarization is True
+    assert ctx.state["drafts"] == drafts
     assert ctx.state["final_document"] == markdown
 
 
@@ -130,6 +134,10 @@ def test_assemble_outreach_packet_missing_state():
     result = asyncio.run(packaging.assemble_outreach_packet(ctx))
     assert "error" in result
     assert ctx.actions.skip_summarization is True
+
+
+def test_output_schema_has_object_root():
+    assert OutreachDraftList.model_json_schema()["type"] == "object"
 
 
 if __name__ == "__main__":
