@@ -12,11 +12,34 @@ Agents are added one at a time. See [`docs/plan.md`](docs/plan.md) for what's bu
 
 ## Prerequisites
 
-- [`uv`](https://docs.astral.sh/uv/) (`curl -LsSf https://astral.sh/uv/install.sh | sh`)
-- A Gemini API key from [aistudio.google.com/apikey](https://aistudio.google.com/apikey), or an OpenAI-compatible endpoint (see [Model provider](#model-provider) below)
-- The [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) with the Pub/Sub emulator component, needed only for `account_research_agent` (its signal intake reads from a local emulator instead of a real event stream, see [`docs/agent-2-account-research-agent.md`](docs/agent-2-account-research-agent.md)): `brew install --cask google-cloud-sdk && gcloud components install pubsub-emulator`. The emulator is Java-based; run `java -version` first, macOS's bundled `java` is a stub, `brew install openjdk` if that fails.
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) for the recommended Docker workflow
+- A Gemini API key from [aistudio.google.com/apikey](https://aistudio.google.com/apikey), required for corpus embeddings even when chat uses an OpenAI-compatible endpoint (see [Model provider](#model-provider) below)
+- [`uv`](https://docs.astral.sh/uv/) and the Google Cloud SDK are needed only for the native workflow below
 
-## Setup
+## Docker setup
+
+Create the shared environment file once and fill in the required API keys:
+
+```bash
+cp agents/.env.example agents/.env
+```
+
+Then start everything:
+
+```bash
+docker compose up --build
+```
+
+Open `http://localhost:8080`. Compose starts the Pub/Sub emulator, waits for it to become healthy, publishes the five fixture buying signals once per emulator lifecycle, and starts ADK only after seeding succeeds. API keys are loaded from `agents/.env` at container runtime; the file, local virtual environments, ADK session data, and chromadb indexes are excluded from the image.
+
+The account research agent acknowledges the five signals when it processes them. To recreate the in-memory emulator and automatically seed a fresh batch:
+
+```bash
+docker compose down
+docker compose up --build
+```
+
+## Native setup
 
 All agents share one environment: one `pyproject.toml`, one venv, one `.env`, all under `agents/`.
 
@@ -28,7 +51,7 @@ cp .env.example .env
 
 Open `agents/.env` and set `GOOGLE_API_KEY`. Retrieval (corpus search) needs this key regardless of which model provider you pick, since embeddings always go through Gemini.
 
-## Running the UI
+### Running the UI
 
 ```bash
 cd agents
@@ -37,7 +60,7 @@ uv run adk web . --port 8080 --reload_agents
 
 Open `http://localhost:8080`, pick an agent from the dropdown, and go from there. Each agent's own doc under `docs/` walks through what it does and how to try it.
 
-## Pub/Sub emulator (account_research_agent only)
+### Pub/Sub emulator (account_research_agent only)
 
 `account_research_agent`'s signal intake pulls from a local Pub/Sub emulator instead of a real event stream, see [`docs/agent-2-account-research-agent.md`](docs/agent-2-account-research-agent.md). It needs its own terminal, running alongside `adk web`:
 

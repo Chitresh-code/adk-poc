@@ -68,25 +68,3 @@ uv sync --python 3.12
 cp .env.example .env    # set GOOGLE_API_KEY
 uv run adk web . --port 8080 --reload_agents   # serves every agents/ subfolder
 ```
-
-## Verification status
-
-Confirmed by running:
-
-- Pipeline wiring imports cleanly against the installed `google-adk` 2.6.3 (sub-agent order, tool/output_key wiring, function-tool schema generation).
-- The deterministic tool logic (file parsing per format, markdown assembly, routing lookup) passes `tests/test_tools.py`.
-- A live end-to-end run against the sample questionnaire (`data/sample_rfp.md`) completed all five steps and produced a routed markdown draft with real Gemini calls at every step, including corpus retrieval.
-
-That live run surfaced two real bugs, both fixed:
-
-- chromadb's `GoogleGenerativeAiEmbeddingFunction` depended on the deprecated `google-generativeai` package, which isn't in `pyproject.toml`, so retrieval failed before ever reaching the corpus.
-- The model name it was pinned to, `text-embedding-004`, no longer exists on the current API.
-
-Retrieval now goes through chromadb's `GoogleGeminiEmbeddingFunction` (built on `google-genai`, already a dependency of `google-adk`, no new package needed), with the model configurable via `GOOGLE_EMBEDDING_MODEL` in `.env` (default `gemini-embedding-001`) instead of hardcoded, so a future model swap is a config change, not a code change.
-
-Two more issues came up after that first live run, both addressed but not yet re-confirmed with a fresh end-to-end run (the Gemini free-tier quota below was exhausted by the time they were fixed):
-
-- **429 quota errors on the Gemini path.** The AI Studio free tier caps `gemini-3.6-flash` (and likely other free-tier models) at 20 requests per day. A single questionnaire run through this pipeline uses roughly 8 to 10 requests, since each tool-using step calls the model twice: once to decide to call the tool, once to respond after. `get_model()` now attaches `retry_options` (`types.HttpRetryOptions`, 3 attempts, exponential backoff) to the Gemini model, which smooths over short-lived rate-limit bursts. It cannot fix a genuinely exhausted daily quota; a `429 RESOURCE_EXHAUSTED` that keeps recurring across retries means the quota, not a pipeline bug.
-- **A weak or free chat model skipping the tool call entirely.** Tested against `MODEL_PROVIDER=openai` pointed at an OpenRouter free-tier model, intake never called `parse_document`, leaving `raw_text` unset in state and the decompose step's instruction template failing the same way the retrieval bug did. Fixed by forcing the tool call at the API level instead of relying on the model choosing to comply, see the Pipeline section above. That same debugging run also hit an unrelated `AuthenticationError` ("Missing Authentication header") from the OpenRouter endpoint, which looks like an account or key issue on the OpenRouter side rather than anything in this pipeline; worth checking `OPENAI_API_KEY` and `OPENAI_BASE_URL` in `.env` directly against OpenRouter before assuming the agent is at fault.
-
-A live run of Agent 2 later surfaced the same failure class here, latent but never actually triggered: `retrieve_context`'s error path (state["questions"] missing) didn't set `state["questions_with_context"]`, so if decompose ever produced no questions, draft's instruction interpolating `{questions_with_context}` unconditionally would raise a `KeyError` instead of a readable error, exactly what happened to Agent 2's `mapped_signals`, see [agent-2-account-research-agent.md](agent-2-account-research-agent.md#verification-status). Fixed the same way: `retrieve_context` now sets `state["questions_with_context"]` to `"[]"` on its error path too, so the pipeline degrades to an empty draft instead of crashing.

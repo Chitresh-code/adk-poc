@@ -75,6 +75,12 @@ docs/
 - Every agent reads seeded local fixtures (CSV/JSON/markdown) that look like CRM records, call transcripts, usage events, and so on, standing in for what a live integration would return.
 - This is documented clearly rather than left for someone to assume it's live.
 
+**Local Docker startup**:
+
+- `docker compose up --build` builds ADK with its locked dependencies, loads API keys from the ignored `agents/.env` file at runtime, and serves the UI on port 8080.
+- Compose waits for the Pub/Sub emulator healthcheck, runs a one-shot signal seeder, and starts ADK only after seeding succeeds. Automatic seeding runs once per emulator lifecycle so repeated startup does not duplicate signals.
+- Build context excludes environment files, virtual environments, ADK session data, and chromadb indexes, so local secrets and runtime state are not copied into the image.
+
 **Google Cloud emulators**: what's actually real, what's emulated, what's skipped. Gemini itself has no local emulator; every agent always calls the real API, that part can't be faked. Emulators only make sense for the infra around the model:
 
 - **Firestore emulator** (`gcloud emulators firestore start`): stands in for the system of record starting at Agent 4 (RevOps CRM hygiene), where the read-only-then-write story is the whole point. Agent 3 can reuse it for account state if useful.
@@ -96,6 +102,15 @@ docs/
 - Revisit if a later agent's step needs branching, retries, or a dynamic fan-out that `SequentialAgent` can't express.
 
 ## Setup (do this once)
+
+Recommended Docker workflow:
+
+```bash
+cp agents/.env.example agents/.env    # fill in required API keys
+docker compose up --build
+```
+
+Native workflow:
 
 ```bash
 # uv, the package manager every adk-samples agent uses
