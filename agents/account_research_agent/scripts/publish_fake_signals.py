@@ -49,6 +49,10 @@ _FAKE_SIGNALS = [
 ]
 
 
+def _should_publish(subscription_created: bool) -> bool:
+    return subscription_created or os.environ.get("SEED_ONLY_ON_CREATE") != "1"
+
+
 def main() -> None:
     if not os.environ.get("PUBSUB_EMULATOR_HOST"):
         raise SystemExit(
@@ -69,12 +73,18 @@ def main() -> None:
         publisher.create_topic(request={"name": topic_path})
     except AlreadyExists:
         pass
+    subscription_created = False
     try:
         subscriber.create_subscription(
             request={"name": subscription_path, "topic": topic_path}
         )
+        subscription_created = True
     except AlreadyExists:
         pass
+
+    if not _should_publish(subscription_created):
+        print(f"Signals already initialized for {subscription_path}; skipping")
+        return
 
     for signal in _FAKE_SIGNALS:
         payload = {**signal, "timestamp": datetime.now(timezone.utc).isoformat()}

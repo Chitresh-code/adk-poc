@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -21,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from tools import buyers, packaging
 from tools.signals import _parse_signal
+from scripts.publish_fake_signals import _should_publish
 
 
 class _FakeActions:
@@ -42,6 +44,21 @@ def test_parse_signal():
     }
     data = json.dumps(payload).encode("utf-8")
     assert _parse_signal(data) == payload
+
+
+def test_automatic_seed_runs_once_per_subscription():
+    previous = os.environ.get("SEED_ONLY_ON_CREATE")
+    try:
+        os.environ["SEED_ONLY_ON_CREATE"] = "1"
+        assert _should_publish(subscription_created=True)
+        assert not _should_publish(subscription_created=False)
+        del os.environ["SEED_ONLY_ON_CREATE"]
+        assert _should_publish(subscription_created=False)
+    finally:
+        if previous is None:
+            os.environ.pop("SEED_ONLY_ON_CREATE", None)
+        else:
+            os.environ["SEED_ONLY_ON_CREATE"] = previous
 
 
 def test_map_buyers():

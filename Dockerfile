@@ -21,4 +21,4 @@ EXPOSE 8080
 ENV PYTHONUNBUFFERED=1
 
 # Default entrypoint: run ADK web UI
-CMD ["uv", "run", "adk", "web", ".", "--port", "8080"]
+CMD ["uv", "run", "--frozen", "adk", "web", ".", "--host", "0.0.0.0", "--port", "8080"]

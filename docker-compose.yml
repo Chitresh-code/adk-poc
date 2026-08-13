@@ -1,5 +1,6 @@
 services:
   adk-agents:
+    image: adk-poc-adk-agents
     build:
       context: .
       dockerfile: Dockerfile
@@ -11,15 +12,29 @@ services:
       PYTHONUNBUFFERED: "1"
       PUBSUB_EMULATOR_HOST: pubsub-emulator:8085
       PUBSUB_PROJECT_ID: adk-poc-local
-    volumes:
-      - ./agents:/app/agents
     depends_on:
-      - pubsub-emulator
-    stdin_open: true
-    tty: true
+      signal-seeder:
+        condition: service_completed_successfully
+
+  signal-seeder:
+    image: adk-poc-adk-agents
+    command: ["uv", "run", "--frozen", "python", "account_research_agent/scripts/publish_fake_signals.py"]
+    environment:
+      PUBSUB_EMULATOR_HOST: pubsub-emulator:8085
+      PUBSUB_PROJECT_ID: adk-poc-local
+      SEED_ONLY_ON_CREATE: "1"
+    depends_on:
+      pubsub-emulator:
+        condition: service_healthy
 
   pubsub-emulator:
     image: google/cloud-sdk:emulators
     command: gcloud beta emulators pubsub start --project=adk-poc-local --host-port=0.0.0.0:8085
     ports:
       - "8085:8085"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8085"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+      start_period: 5s
