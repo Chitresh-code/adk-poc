@@ -3,7 +3,7 @@
 Creates the topic and subscription if they don't exist yet. Run this before
 asking the agent to check for new signals: the pipeline only ever pulls, it
 never publishes on its own. Requires PUBSUB_EMULATOR_HOST to be set, see
-docs/agent-2-account-research-agent.md.
+docs/account-research-agent.md.
 
 Run: uv run python account_research_agent/scripts/publish_fake_signals.py
 """
@@ -57,7 +57,7 @@ def main() -> None:
     if not os.environ.get("PUBSUB_EMULATOR_HOST"):
         raise SystemExit(
             "PUBSUB_EMULATOR_HOST is not set. Start the Pub/Sub emulator "
-            "and export it first, see docs/agent-2-account-research-agent.md."
+            "and export it first, see docs/account-research-agent.md."
         )
 
     from google.api_core.exceptions import AlreadyExists

@@ -1,9 +1,10 @@
 """Runs every live, per-agent test under agents/tests/ and prints a summary.
 
-Each test_*.py here is a real end-to-end run against real APIs (Gemini, and
-for account_research_agent a real Pub/Sub emulator), not a mock. Together
-they can burn a meaningful chunk of a free-tier daily quota, so this is
-meant to be run deliberately, not on every save.
+Each test_*.py here is a real end-to-end run against real APIs (Gemini, a
+real Pub/Sub emulator for account_research_agent, a real Firestore emulator
+for revops_agent), not a mock. Together they can burn a meaningful chunk of
+a free-tier daily quota, so this is meant to be run deliberately, not on
+every save.
 
 Auto-discovers test_*.py files in this directory, so a new agent's live
 test just needs to be dropped in here, nothing to register by hand.

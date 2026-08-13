@@ -1,8 +1,7 @@
 """Instructions for the pipeline's LlmAgent steps.
 
 {state_key} placeholders are filled in automatically from session state by
-ADK before each call; see docs/agent-3-churn-agent.md for the pipeline
-shape.
+ADK before each call; see docs/churn-agent.md for the pipeline shape.
 """
 
 SIGNALS_INSTRUCTION = """You are the signal intake step of a CS churn and

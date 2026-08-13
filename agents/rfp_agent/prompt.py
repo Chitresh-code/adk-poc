@@ -1,7 +1,7 @@
 """Instructions for the pipeline's LlmAgent steps.
 
 {state_key} placeholders are filled in automatically from session state by
-ADK before each call; see docs/agent-1-rfp-agent.md for the pipeline shape.
+ADK before each call; see docs/rfp-agent.md for the pipeline shape.
 """
 
 INTAKE_INSTRUCTION = """You are the intake step of an RFP response pipeline.

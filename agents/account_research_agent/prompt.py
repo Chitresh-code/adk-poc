@@ -1,8 +1,8 @@
 """Instructions for the pipeline's LlmAgent steps.
 
 {state_key} placeholders are filled in automatically from session state by
-ADK before each call; see docs/agent-2-account-research-agent.md for the
-pipeline shape.
+ADK before each call; see docs/account-research-agent.md for the pipeline
+shape.
 """
 
 SIGNALS_INSTRUCTION = """You are the signal intake step of an account

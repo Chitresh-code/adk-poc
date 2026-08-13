@@ -8,7 +8,7 @@ A set of agents built on Google's Agent Development Kit (ADK), each one handling
 - Keeping the CRM clean
 - Coaching sales calls
 
-Agents are added one at a time. See [`docs/plan.md`](docs/plan.md) for what's built, what's planned, and the architecture decisions that apply across all of them, [`docs/agent-1-rfp-agent.md`](docs/agent-1-rfp-agent.md) for how the RFP agent works, [`docs/agent-2-account-research-agent.md`](docs/agent-2-account-research-agent.md) for the account research and outreach agent, and [`docs/agent-3-churn-agent.md`](docs/agent-3-churn-agent.md) for the CS churn and expansion agent.
+Agents are added one at a time. See [`docs/plan.md`](docs/plan.md) for what's built, what's planned, and the architecture decisions that apply across all of them, [`docs/rfp-agent.md`](docs/rfp-agent.md) for how the RFP agent works, [`docs/account-research-agent.md`](docs/account-research-agent.md) for the account research and outreach agent, [`docs/churn-agent.md`](docs/churn-agent.md) for the CS churn and expansion agent, and [`docs/revops-agent.md`](docs/revops-agent.md) for the RevOps CRM hygiene and forecasting agent.
 
 ## Prerequisites
 
@@ -60,9 +60,14 @@ uv run adk web . --port 8080 --reload_agents
 
 Open `http://localhost:8080`, pick an agent from the dropdown, and go from there. Each agent's own doc under `docs/` walks through what it does and how to try it.
 
-### Pub/Sub emulator (account_research_agent only)
+### Emulators (native workflow only)
 
-`account_research_agent`'s signal intake pulls from a local Pub/Sub emulator instead of a real event stream, see [`docs/agent-2-account-research-agent.md`](docs/agent-2-account-research-agent.md). It needs its own terminal, running alongside `adk web`:
+Docker Compose starts and seeds every emulator automatically; these are only needed when running
+`adk web` natively.
+
+#### Pub/Sub emulator (account_research_agent only)
+
+`account_research_agent`'s signal intake pulls from a local Pub/Sub emulator instead of a real event stream, see [`docs/account-research-agent.md`](docs/account-research-agent.md). It needs its own terminal, running alongside `adk web`:
 
 ```bash
 export PATH="$HOME/google-cloud-sdk/bin:/opt/homebrew/opt/openjdk/bin:$PATH"   # if not already on PATH
@@ -74,6 +79,22 @@ The `beta` prefix is required on current `gcloud` versions; the non-beta `gcloud
 ```bash
 cd agents
 uv run python account_research_agent/scripts/publish_fake_signals.py
+```
+
+#### Firestore emulator (revops_agent only)
+
+`revops_agent`'s CRM read step reads from a local Firestore emulator instead of a real CRM, see [`docs/revops-agent.md`](docs/revops-agent.md). It needs its own terminal, running alongside `adk web`:
+
+```bash
+export PATH="$HOME/google-cloud-sdk/bin:/opt/homebrew/opt/openjdk/bin:$PATH"   # if not already on PATH
+gcloud emulators firestore start --project=adk-poc-local --host-port=localhost:8090
+```
+
+In a third terminal, with `FIRESTORE_EMULATOR_HOST=localhost:8090` and `FIRESTORE_PROJECT_ID=adk-poc-local` exported (see `agents/.env.example`), seed it with the fixture accounts and deals before asking the agent to sweep the CRM:
+
+```bash
+cd agents
+uv run python revops_agent/scripts/seed_firestore.py
 ```
 
 ## Model provider
@@ -96,15 +117,17 @@ agents/
   common/
     model.py                         # get_model(), shared model access
     retrieval.py                     # shared chromadb helper
-  rfp_agent/                         # see docs/agent-1-rfp-agent.md
-  account_research_agent/            # see docs/agent-2-account-research-agent.md
-  churn_agent/                       # see docs/agent-3-churn-agent.md
+  rfp_agent/                         # see docs/rfp-agent.md
+  account_research_agent/            # see docs/account-research-agent.md
+  churn_agent/                       # see docs/churn-agent.md
+  revops_agent/                      # see docs/revops-agent.md
   tests/                             # live end-to-end tests, one per agent, see Tests below
 docs/
-  plan.md                            # roadmap and architecture decisions
-  agent-1-rfp-agent.md               # RFP agent design and walkthrough
-  agent-2-account-research-agent.md  # account research agent design and walkthrough
-  agent-3-churn-agent.md             # CS churn and expansion agent design and walkthrough
+  plan.md                     # roadmap and architecture decisions
+  rfp-agent.md                # RFP agent design and walkthrough
+  account-research-agent.md   # account research agent design and walkthrough
+  churn-agent.md              # CS churn and expansion agent design and walkthrough
+  revops-agent.md             # RevOps CRM hygiene and forecasting agent design and walkthrough
 ```
 
 ## Tests

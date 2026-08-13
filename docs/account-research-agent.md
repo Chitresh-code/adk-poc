@@ -11,7 +11,7 @@ A rep opens `adk web`, selects `account_research_agent`, and asks it to check fo
 
 ## Pipeline
 
-A `SequentialAgent` with one `LlmAgent` per step, the same shape as Agent 1: tool-only steps force their single call via `generate_content_config` (`function_calling_config` mode `ANY`) and set `skip_summarization` on every return path, so a weak model can't skip the call and a turn is never more than one model call. See [agent-1-rfp-agent.md](agent-1-rfp-agent.md#pipeline) for why that pattern exists; it isn't re-derived per agent.
+A `SequentialAgent` with one `LlmAgent` per step, the same shape as Agent 1: tool-only steps force their single call via `generate_content_config` (`function_calling_config` mode `ANY`) and set `skip_summarization` on every return path, so a weak model can't skip the call and a turn is never more than one model call. See [rfp-agent.md](rfp-agent.md#pipeline) for why that pattern exists; it isn't re-derived per agent.
 
 1. **Signal intake** (`pull_signals` tool): pulls pending messages from the Pub/Sub emulator subscription that a separate fixture script publishes to (`{account_id, signal_type, detail, timestamp}`), acks them, and writes the normalized list to state.
 2. **Account research** (`research_account` tool): for each signal, looks up the account's fixture CRM record (firmographic data, current deal stage if any) and runs the same chromadb semantic search Agent 1 uses, against a small corpus of product proof points and case studies, to find material relevant to that account's industry and the signal itself. No match means the next step gets told there's nothing to cite, not a made-up citation.

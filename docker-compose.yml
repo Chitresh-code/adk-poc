@@ -12,8 +12,12 @@ services:
       PYTHONUNBUFFERED: "1"
       PUBSUB_EMULATOR_HOST: pubsub-emulator:8085
       PUBSUB_PROJECT_ID: adk-poc-local
+      FIRESTORE_EMULATOR_HOST: firestore-emulator:8090
+      FIRESTORE_PROJECT_ID: adk-poc-local
     depends_on:
       signal-seeder:
+        condition: service_completed_successfully
+      crm-seeder:
         condition: service_completed_successfully
 
   signal-seeder:
@@ -34,6 +38,28 @@ services:
       - "8085:8085"
     healthcheck:
       test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8085"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+      start_period: 5s
+
+  crm-seeder:
+    image: adk-poc-adk-agents
+    command: ["uv", "run", "--frozen", "python", "revops_agent/scripts/seed_firestore.py"]
+    environment:
+      FIRESTORE_EMULATOR_HOST: firestore-emulator:8090
+      FIRESTORE_PROJECT_ID: adk-poc-local
+    depends_on:
+      firestore-emulator:
+        condition: service_healthy
+
+  firestore-emulator:
+    image: google/cloud-sdk:emulators
+    command: gcloud emulators firestore start --project=adk-poc-local --host-port=0.0.0.0:8090
+    ports:
+      - "8090:8090"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8090"]
       interval: 2s
       timeout: 2s
       retries: 15

@@ -1,0 +1,93 @@
+[
+  {
+    "deal_id": "deal_meridian_expansion",
+    "account_id": "acct_meridian",
+    "name": "Meridian Health - Platform Expansion",
+    "stage": "negotiation",
+    "amount": 85000,
+    "close_date_days_from_now": 18,
+    "next_step": "Finalize legal redline",
+    "stage_entered_days_ago": 6,
+    "last_activity_days_ago": 2,
+    "owner": "Dana Ruiz",
+    "forecast_category": "commit"
+  },
+  {
+    "deal_id": "deal_meridian_dup_renewal",
+    "account_id": "acct_meridian_dup",
+    "name": "Meridian Healthcare Group - Renewal",
+    "stage": "proposal",
+    "amount": 15000,
+    "close_date_days_from_now": 10,
+    "next_step": "Send updated proposal",
+    "stage_entered_days_ago": 5,
+    "last_activity_days_ago": 3,
+    "owner": "Priya Anand",
+    "forecast_category": "best_case"
+  },
+  {
+    "deal_id": "deal_pinecrest_renewal",
+    "account_id": "acct_pinecrest",
+    "name": "Pinecrest Robotics - Renewal",
+    "stage": "negotiation",
+    "amount": null,
+    "close_date_days_from_now": null,
+    "next_step": "Confirm renewal terms",
+    "stage_entered_days_ago": 8,
+    "last_activity_days_ago": 4,
+    "owner": "Priya Anand",
+    "forecast_category": "commit"
+  },
+  {
+    "deal_id": "deal_fernwood_addon",
+    "account_id": "acct_fernwood",
+    "name": "Fernwood Capital - Analytics Add-on",
+    "stage": "proposal",
+    "amount": 32000,
+    "close_date_days_from_now": 15,
+    "next_step": "Awaiting security review",
+    "stage_entered_days_ago": 50,
+    "last_activity_days_ago": 6,
+    "owner": "Dana Ruiz",
+    "forecast_category": "best_case"
+  },
+  {
+    "deal_id": "deal_brightline_upsell",
+    "account_id": "acct_brightline",
+    "name": "Brightline Logistics - Multi-year Upsell",
+    "stage": "negotiation",
+    "amount": 120000,
+    "close_date_days_from_now": 25,
+    "next_step": "Legal review",
+    "stage_entered_days_ago": 10,
+    "last_activity_days_ago": 35,
+    "owner": "Marcus Webb",
+    "forecast_category": "commit"
+  },
+  {
+    "deal_id": "deal_meridian_renewal_prior",
+    "account_id": "acct_meridian",
+    "name": "Meridian Health - Initial Contract",
+    "stage": "closed_won",
+    "amount": 60000,
+    "close_date_days_from_now": -200,
+    "next_step": null,
+    "stage_entered_days_ago": 200,
+    "last_activity_days_ago": 200,
+    "owner": "Dana Ruiz",
+    "forecast_category": "commit"
+  },
+  {
+    "deal_id": "deal_solace_renewal",
+    "account_id": "acct_solace",
+    "name": "Solace Media - Renewal",
+    "stage": "qualification",
+    "amount": 40000,
+    "close_date_days_from_now": 30,
+    "next_step": "Confirm budget owner",
+    "stage_entered_days_ago": 5,
+    "last_activity_days_ago": 3,
+    "owner": "Marcus Webb",
+    "forecast_category": "pipeline"
+  }
+]

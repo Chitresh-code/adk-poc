@@ -32,7 +32,7 @@ A `SequentialAgent` with one `LlmAgent` per step, the same shape as Agents 1 and
 steps force their single call via `generate_content_config` (`function_calling_config` mode
 `ANY`) and set `skip_summarization` on every return path, so a weak model can't skip the call and
 a turn is never more than one model call. See
-[agent-1-rfp-agent.md](agent-1-rfp-agent.md#pipeline) for why that pattern exists; it isn't
+[rfp-agent.md](rfp-agent.md#pipeline) for why that pattern exists; it isn't
 re-derived per agent.
 
 1. **Signal intake** (`load_account_signals` tool): reads this agent's own fixture account,

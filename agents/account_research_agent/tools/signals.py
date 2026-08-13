@@ -3,7 +3,7 @@
 google-cloud-pubsub connects to PUBSUB_EMULATOR_HOST automatically (no
 credentials needed) whenever that env var is set. Nothing publishes on its
 own: run scripts/publish_fake_signals.py first, which also creates the topic
-and subscription this reads from. See docs/agent-2-account-research-agent.md.
+and subscription this reads from. See docs/account-research-agent.md.
 """
 
 from __future__ import annotations
@@ -59,7 +59,7 @@ async def pull_signals(tool_context: ToolContext, max_messages: int = 10) -> dic
             "error": (
                 "PUBSUB_EMULATOR_HOST is not set. Start the Pub/Sub "
                 "emulator and export it first, see "
-                "docs/agent-2-account-research-agent.md."
+                "docs/account-research-agent.md."
             )
         }
 

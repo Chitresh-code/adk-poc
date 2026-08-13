@@ -1,6 +1,6 @@
 """CS Churn & Expansion Agent: signals -> score -> research -> draft -> package.
 
-See docs/agent-3-churn-agent.md for the pipeline design.
+See docs/churn-agent.md for the pipeline design.
 """
 
 from google.adk.agents import LlmAgent, SequentialAgent

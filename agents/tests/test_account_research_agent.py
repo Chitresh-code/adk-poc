@@ -3,8 +3,8 @@ against a real model, a real corpus, and a real Pub/Sub emulator, the same
 way a user asking `adk web` to check for new signals would trigger it.
 
 Needs a running Pub/Sub emulator (PUBSUB_EMULATOR_HOST set), see
-docs/agent-2-account-research-agent.md; skips cleanly if that's not
-available rather than failing. Spends real API quota when it does run:
+docs/account-research-agent.md; skips cleanly if that's not available
+rather than failing. Spends real API quota when it does run:
 roughly 5 model calls (signals, research, buyers, draft, package) plus one
 embedding call per signal for corpus search. Not something to run on every
 save, see agents/tests/run_all.py.
@@ -41,7 +41,7 @@ def test_check_signals_end_to_end():
     if not os.environ.get("PUBSUB_EMULATOR_HOST"):
         print(
             "SKIP: PUBSUB_EMULATOR_HOST not set, no Pub/Sub emulator to pull "
-            "signals from. See docs/agent-2-account-research-agent.md."
+            "signals from. See docs/account-research-agent.md."
         )
         return
 

@@ -29,7 +29,7 @@ from rfp_agent.agent import root_agent  # noqa: E402
 
 # "Are you SOC 2 certified?" is covered by data/corpus/past_answers/soc2.md.
 # "On-premise deployment" is one of the two categories the corpus
-# deliberately doesn't cover, see docs/agent-1-rfp-agent.md's corpus
+# deliberately doesn't cover, see docs/rfp-agent.md's corpus
 # seeding section, so this pasted questionnaire exercises both the grounded
 # and the needs-SME-review paths in one run.
 _SAMPLE_QUESTIONNAIRE = """Security Questionnaire

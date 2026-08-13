@@ -1,6 +1,6 @@
 """RFP / Security Questionnaire Agent: intake -> decompose -> retrieve -> draft -> package.
 
-See docs/agent-1-rfp-agent.md for the pipeline design and demo script.
+See docs/rfp-agent.md for the pipeline design and demo script.
 """
 
 from google.adk.agents import LlmAgent, SequentialAgent

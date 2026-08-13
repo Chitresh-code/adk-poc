@@ -6,7 +6,7 @@ Instructions for Claude Code when working in this repository.
 
 Google ADK proof-of-concept for a client demo: five agents, built one at a time. See
 [`docs/plan.md`](docs/plan.md) for the roadmap and locked-in architecture decisions, and
-[`docs/agent-1-rfp-agent.md`](docs/agent-1-rfp-agent.md) (and later `docs/agent-N-*.md`) for the
+[`docs/rfp-agent.md`](docs/rfp-agent.md) (and later `docs/agent-N-*.md`) for the
 per-agent design. Read `docs/plan.md` before touching agent code; it records decisions (model
 provider switch, repo layout, why fixture data instead of live integrations, when GCP emulators
 come in) that should not be re-derived or re-litigated per change.
@@ -28,7 +28,7 @@ come in) that should not be re-derived or re-litigated per change.
   real external SaaS API (CRM, ticketing, call recording) for this demo; if a task seems to need
   one, check `docs/plan.md` first, it's a deliberate scope boundary, not an oversight.
 - When a new agent starts, add its design doc under `docs/agent-N-<name>.md` following the
-  structure of `docs/agent-1-rfp-agent.md`, and update the status table in `docs/plan.md`.
+  structure of `docs/rfp-agent.md`, and update the status table in `docs/plan.md`.
 
 ## Evidence-Driven Engineering Principles
 
