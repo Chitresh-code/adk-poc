@@ -21,19 +21,24 @@ def _render_note(note: dict | None) -> list[str]:
     return lines
 
 
-async def assemble_hygiene_report(tool_context: ToolContext) -> dict:
+async def assemble_hygiene_report(tool_context: ToolContext) -> dict | str:
     """Builds the final markdown CRM hygiene and forecast report.
 
     Sets skip_summarization so the markdown reaches the chat pane verbatim
     instead of an LLM paraphrase of it, matching every other package step
     in this repo.
 
+    Returns the markdown as a plain string on success, not wrapped in a
+    dict: ADK's function-response handling only promotes a plain string
+    verbatim into the turn's visible text part, a dict gets JSON-dumped
+    instead, see google/adk/flows/llm_flows/functions.py.
+
     Args:
         tool_context: injected by ADK, gives access to session state.
 
     Returns:
-        A dict with "markdown", or "error" if a prior step's state is
-        missing.
+        The markdown string, or a dict with "error" if a prior step's
+        state is missing.
     """
     tool_context.actions.skip_summarization = True
 
@@ -103,4 +108,4 @@ async def assemble_hygiene_report(tool_context: ToolContext) -> dict:
 
     markdown = "\n".join(lines)
     tool_context.state["final_document"] = markdown
-    return {"markdown": markdown}
+    return markdown

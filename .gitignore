@@ -6,3 +6,4 @@ __pycache__/
 agents/*/data/chroma/
 agents/*/.adk/
 .DS_Store
+.claude/scheduled_tasks.lock

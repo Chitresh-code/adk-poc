@@ -1,0 +1,9 @@
+{
+  "backendUrl": "",
+  "logo": {
+    "text": "Quarks Technosoft",
+    "imageUrl": "assets/qtsolv-logo-dark-bg.svg",
+    "imageUrlDark": "assets/qtsolv-logo-dark-bg.svg",
+    "imageUrlLight": "assets/qtsolv-logo-light-bg.svg"
+  }
+}

@@ -1,0 +1,17 @@
+.suggested-prompts {
+  margin-top: 16px;
+}
+
+.suggested-prompts-label {
+  font-family: 'Google Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--mat-sys-on-surface-variant);
+  margin-bottom: 8px;
+}
+
+mat-chip-set {
+  cursor: pointer;
+}

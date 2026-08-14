@@ -7,7 +7,7 @@ import json
 from google.adk.tools import ToolContext
 
 
-async def assemble_outreach_packet(tool_context: ToolContext) -> dict:
+async def assemble_outreach_packet(tool_context: ToolContext) -> dict | str:
     """Builds the packaged markdown doc from state["mapped_signals"] and state["drafts"].
 
     Sets skip_summarization on every path so this becomes the chat's final
@@ -16,9 +16,14 @@ async def assemble_outreach_packet(tool_context: ToolContext) -> dict:
     forced to call this tool (see agent.py), which would otherwise force a
     second, pointless tool-call attempt on a follow-up summarization turn.
 
+    Returns the markdown as a plain string on success, not wrapped in a
+    dict: ADK's function-response handling only promotes a plain string
+    verbatim into the turn's visible text part, a dict gets JSON-dumped
+    instead, see google/adk/flows/llm_flows/functions.py.
+
     Returns:
-        A dict with "markdown", or "error" if a required pipeline step
-        hasn't run yet.
+        The markdown string, or a dict with "error" if a required pipeline
+        step hasn't run yet.
     """
     tool_context.actions.skip_summarization = True
 
@@ -67,4 +72,4 @@ async def assemble_outreach_packet(tool_context: ToolContext) -> dict:
 
     markdown = "\n".join(lines)
     tool_context.state["final_document"] = markdown
-    return {"markdown": markdown}
+    return markdown

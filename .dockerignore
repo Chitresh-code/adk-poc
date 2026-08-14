@@ -21,6 +21,7 @@ htmlcov/
 **/.adk/
 **/data/chroma/
 node_modules/
+.angular/
 .idea/
 .vscode/
 *.swp

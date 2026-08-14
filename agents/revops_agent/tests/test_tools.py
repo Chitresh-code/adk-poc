@@ -135,8 +135,8 @@ def test_assemble_hygiene_report():
         },
     ]
     result = asyncio.run(packaging.assemble_hygiene_report(ctx))
-    assert "error" not in result, result
-    markdown = result["markdown"]
+    assert isinstance(result, str), result
+    markdown = result
     assert "Pinecrest Robotics" in markdown
     assert "Meridian Health" in markdown
     assert "Brightline Logistics" in markdown

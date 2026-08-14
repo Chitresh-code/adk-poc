@@ -124,19 +124,24 @@ def _render_markdown(analysis: dict, note: dict, source: str, crm_status: str) -
     return "\n".join(lines)
 
 
-async def update_crm_and_package(tool_context: ToolContext) -> dict:
+async def update_crm_and_package(tool_context: ToolContext) -> dict | str:
     """Writes the CRM update (if warranted) and builds the final markdown report.
 
     Sets skip_summarization so the markdown reaches the chat pane verbatim
     instead of an LLM paraphrase of it, matching every other package step
     in this repo.
 
+    Returns the markdown as a plain string on success, not wrapped in a
+    dict: ADK's function-response handling only promotes a plain string
+    verbatim into the turn's visible text part, a dict gets JSON-dumped
+    instead, see google/adk/flows/llm_flows/functions.py.
+
     Args:
         tool_context: injected by ADK, gives access to session state.
 
     Returns:
-        A dict with "markdown", or "error" if a prior step's state is
-        missing.
+        The markdown string, or a dict with "error" if a prior step's
+        state is missing.
     """
     tool_context.actions.skip_summarization = True
 
@@ -158,4 +163,4 @@ async def update_crm_and_package(tool_context: ToolContext) -> dict:
 
     markdown = _render_markdown(analysis, note, source, crm_status)
     tool_context.state["final_document"] = markdown
-    return {"markdown": markdown}
+    return markdown

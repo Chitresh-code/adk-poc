@@ -116,8 +116,8 @@ def test_update_crm_and_package_writes_when_flagged_and_matched():
         {"analysis": _analysis(), "coaching_note": _note(), "transcript_text": "...", "call_source": "pasted text"}
     )
     result = asyncio.run(packaging.update_crm_and_package(ctx))
-    assert "error" not in result, result
-    markdown = result["markdown"]
+    assert isinstance(result, str), result
+    markdown = result
     assert "# Call Coaching Report" in markdown
     assert "Pinecrest Robotics" in markdown
     assert "Vantage Ops" in markdown
@@ -137,8 +137,8 @@ def test_update_crm_and_package_skips_when_low_risk():
         }
     )
     result = asyncio.run(packaging.update_crm_and_package(ctx))
-    assert "error" not in result, result
-    assert "CRM update skipped: risk level is low" in result["markdown"]
+    assert isinstance(result, str), result
+    assert "CRM update skipped: risk level is low" in result
 
 
 def test_update_crm_and_package_skips_when_unmatched():
@@ -151,9 +151,9 @@ def test_update_crm_and_package_skips_when_unmatched():
         }
     )
     result = asyncio.run(packaging.update_crm_and_package(ctx))
-    assert "error" not in result, result
-    assert "CRM update skipped: no deal was matched" in result["markdown"]
-    assert "_No CRM deal could be confidently matched to this call._" in result["markdown"]
+    assert isinstance(result, str), result
+    assert "CRM update skipped: no deal was matched" in result
+    assert "_No CRM deal could be confidently matched to this call._" in result
 
 
 def test_update_crm_and_package_missing_state():

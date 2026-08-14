@@ -4,8 +4,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
     env_file:
       - ./agents/.env
     environment:
@@ -19,6 +17,16 @@ services:
         condition: service_completed_successfully
       crm-seeder:
         condition: service_completed_successfully
+
+  web:
+    image: adk-poc-web
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - adk-agents
 
   signal-seeder:
     image: adk-poc-adk-agents

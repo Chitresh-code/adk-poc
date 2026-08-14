@@ -119,8 +119,8 @@ def test_assemble_outreach_packet():
         {"mapped_signals": mapped_signals, "drafts": {"items": drafts}}
     )
     result = asyncio.run(packaging.assemble_outreach_packet(ctx))
-    assert "error" not in result, result
-    markdown = result["markdown"]
+    assert isinstance(result, str), result
+    markdown = result
     assert "Meridian Health" in markdown
     assert "Dana Whitfield" in markdown
     assert "Scaling platform engineering at Meridian" in markdown

@@ -116,8 +116,8 @@ def test_assemble_account_packet():
     ]
     ctx = _FakeToolContext({"scored_accounts": scored_accounts, "drafts": drafts})
     result = asyncio.run(packaging.assemble_account_packet(ctx))
-    assert "error" not in result, result
-    markdown = result["markdown"]
+    assert isinstance(result, str), result
+    markdown = result
     assert "Meridian Health" in markdown
     assert "Sync failures are driving disengagement." in markdown
     assert "Solace Media" in markdown

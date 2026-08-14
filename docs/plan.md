@@ -93,6 +93,7 @@ agents/
       fixtures/                    # sample call transcripts, text only
     tests/
       test_tools.py
+web/                     # branded frontend (vendored google/adk-web), see docs/web-ui.md
 docs/
   plan.md                # this file
   rfp-agent.md
@@ -103,10 +104,7 @@ docs/
 - None of the agents get wired to a real Salesforce, Gong, Zendesk, or HubSpot instance; there isn't one to point at, and OAuth plumbing is a lot of work that buys nothing at this stage.
 - Every agent reads seeded local fixtures (CSV/JSON/markdown) that look like CRM records, call transcripts, usage events, and so on, standing in for what a live integration would return.
 - This is documented clearly rather than left for someone to assume it's live.
-- Exception, not a contradiction: Agent 5's audio transcription is real, local model inference
-  (faster-whisper, open Whisper weights), not a fixture standing in for one. What's still fixture
-  data is the CRM it matches calls against and the sample call transcripts shipped in `data/`; no
-  agent calls a hosted transcription API (Gong, Otter, or otherwise).
+- Exception, not a contradiction: Agent 5's audio transcription is real, local model inference (faster-whisper, open Whisper weights), not a fixture standing in for one. What's still fixture data is the CRM it matches calls against and the sample call transcripts shipped in `data/`; no agent calls a hosted transcription API (Gong, Otter, or otherwise).
 
 **Local Docker startup**:
 

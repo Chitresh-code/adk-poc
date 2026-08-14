@@ -8,7 +8,7 @@ A set of agents built on Google's Agent Development Kit (ADK), each one handling
 - Keeping the CRM clean
 - Coaching sales calls
 
-Agents are added one at a time. See [`docs/plan.md`](docs/plan.md) for what's built, what's planned, and the architecture decisions that apply across all of them, [`docs/rfp-agent.md`](docs/rfp-agent.md) for how the RFP agent works, [`docs/account-research-agent.md`](docs/account-research-agent.md) for the account research and outreach agent, [`docs/churn-agent.md`](docs/churn-agent.md) for the CS churn and expansion agent, [`docs/revops-agent.md`](docs/revops-agent.md) for the RevOps CRM hygiene and forecasting agent, and [`docs/call-coaching-agent.md`](docs/call-coaching-agent.md) for the call analysis and coaching agent.
+Agents are added one at a time. See [`docs/plan.md`](docs/plan.md) for what's built, what's planned, and the architecture decisions that apply across all of them, [`docs/rfp-agent.md`](docs/rfp-agent.md) for how the RFP agent works, [`docs/account-research-agent.md`](docs/account-research-agent.md) for the account research and outreach agent, [`docs/churn-agent.md`](docs/churn-agent.md) for the CS churn and expansion agent, [`docs/revops-agent.md`](docs/revops-agent.md) for the RevOps CRM hygiene and forecasting agent, [`docs/call-coaching-agent.md`](docs/call-coaching-agent.md) for the call analysis and coaching agent, and [`docs/web-ui.md`](docs/web-ui.md) for the branded web UI.
 
 ## Prerequisites
 
@@ -30,7 +30,7 @@ Then start everything:
 docker compose up --build
 ```
 
-Open `http://localhost:8080`. Compose starts the Pub/Sub and Firestore emulators, waits for both to become healthy, seeds the fixture buying signals and CRM records once per emulator lifecycle, and starts ADK only after both seeders succeed. API keys are loaded from `agents/.env` at container runtime; the file, local virtual environments, ADK session data, and chromadb indexes are excluded from the image. `call_coaching_agent`'s local Whisper model downloads from Hugging Face the first time you attach audio in a given container, so that first transcription needs outbound network access; the cache isn't persisted across `docker compose down`, so a fresh container re-downloads it once.
+Open `http://localhost:8080`, the branded web UI (see [`docs/web-ui.md`](docs/web-ui.md)), served by nginx and proxied to the Python backend on the same origin. Compose starts the Pub/Sub and Firestore emulators, waits for both to become healthy, seeds the fixture buying signals and CRM records once per emulator lifecycle, and starts the backend and frontend only after both seeders succeed. API keys are loaded from `agents/.env` at container runtime; the file, local virtual environments, ADK session data, and chromadb indexes are excluded from the image. `call_coaching_agent`'s local Whisper model downloads from Hugging Face the first time you attach audio in a given container, so that first transcription needs outbound network access; the cache isn't persisted across `docker compose down`, so a fresh container re-downloads it once.
 
 The account research agent acknowledges the five signals when it processes them. To recreate the in-memory emulator and automatically seed a fresh batch:
 
@@ -53,21 +53,35 @@ Open `agents/.env` and set `GOOGLE_API_KEY`. Retrieval (corpus search) needs thi
 
 ### Running the UI
 
+The branded frontend (`web/`) and the Python backend run as two processes:
+
+```bash
+# terminal 1: the backend
+cd agents
+uv run adk api_server . --allow_origins=http://localhost:4200 --with_ui
+
+# terminal 2: the frontend
+cd web
+npm install
+npm run serve --backend=http://127.0.0.1:8000
+```
+
+Open `http://localhost:4200`, pick an agent from the dropdown, and go from there. Each agent's own doc under `docs/` walks through what it does and how to try it; see [`docs/web-ui.md`](docs/web-ui.md) for how the UI itself is put together.
+
+ADK's own unbranded dev UI still works too, with no Node/npm dependency, if that's all you need:
+
 ```bash
 cd agents
 uv run adk web . --port 8080 --reload_agents
 ```
 
-Open `http://localhost:8080`, pick an agent from the dropdown, and go from there. Each agent's own doc under `docs/` walks through what it does and how to try it.
-
 ### Emulators (native workflow only)
 
-Docker Compose starts and seeds every emulator automatically; these are only needed when running
-`adk web` natively.
+Docker Compose starts and seeds every emulator automatically; these are only needed when running the backend natively (`adk api_server` or `adk web`).
 
 #### Pub/Sub emulator (account_research_agent only)
 
-`account_research_agent`'s signal intake pulls from a local Pub/Sub emulator instead of a real event stream, see [`docs/account-research-agent.md`](docs/account-research-agent.md). It needs its own terminal, running alongside `adk web`:
+`account_research_agent`'s signal intake pulls from a local Pub/Sub emulator instead of a real event stream, see [`docs/account-research-agent.md`](docs/account-research-agent.md). It needs its own terminal, running alongside the backend:
 
 ```bash
 export PATH="$HOME/google-cloud-sdk/bin:/opt/homebrew/opt/openjdk/bin:$PATH"   # if not already on PATH
@@ -83,7 +97,7 @@ uv run python account_research_agent/scripts/publish_fake_signals.py
 
 #### Firestore emulator (revops_agent and call_coaching_agent)
 
-`revops_agent`'s CRM read step reads from a local Firestore emulator instead of a real CRM, see [`docs/revops-agent.md`](docs/revops-agent.md). `call_coaching_agent` reads and writes the same collections, matching calls against the same CRM data instead of seeding a second copy, see [`docs/call-coaching-agent.md`](docs/call-coaching-agent.md). It needs its own terminal, running alongside `adk web`:
+`revops_agent`'s CRM read step reads from a local Firestore emulator instead of a real CRM, see [`docs/revops-agent.md`](docs/revops-agent.md). `call_coaching_agent` reads and writes the same collections, matching calls against the same CRM data instead of seeding a second copy, see [`docs/call-coaching-agent.md`](docs/call-coaching-agent.md). It needs its own terminal, running alongside the backend:
 
 ```bash
 export PATH="$HOME/google-cloud-sdk/bin:/opt/homebrew/opt/openjdk/bin:$PATH"   # if not already on PATH
@@ -123,6 +137,7 @@ agents/
   revops_agent/                      # see docs/revops-agent.md
   call_coaching_agent/               # see docs/call-coaching-agent.md
   tests/                             # live end-to-end tests, one per agent, see Tests below
+web/                                 # branded frontend, see docs/web-ui.md
 docs/
   plan.md                     # roadmap and architecture decisions
   rfp-agent.md                # RFP agent design and walkthrough
@@ -130,6 +145,7 @@ docs/
   churn-agent.md              # CS churn and expansion agent design and walkthrough
   revops-agent.md             # RevOps CRM hygiene and forecasting agent design and walkthrough
   call-coaching-agent.md      # call analysis and coaching agent design and walkthrough
+  web-ui.md                   # branded web UI: setup, branding, suggested prompts
 ```
 
 ## Tests

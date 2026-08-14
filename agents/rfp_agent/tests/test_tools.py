@@ -120,8 +120,8 @@ def test_assemble_draft():
         }
     )
     result = asyncio.run(packaging.assemble_draft(ctx))
-    assert "error" not in result, result
-    markdown = result["markdown"]
+    assert isinstance(result, str), result
+    markdown = result
     assert "Do you support SSO?" in markdown
     assert "Yes, SAML SSO is supported." in markdown
     assert "**Needs SME review:** yes, route to Presales" in markdown, markdown
