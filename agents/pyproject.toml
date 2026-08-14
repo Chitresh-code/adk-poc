@@ -12,6 +12,7 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "google-cloud-pubsub>=2.0.0",
     "google-cloud-firestore>=2.16.0",
+    "faster-whisper>=1.2.1",
 ]
 
 [tool.uv]

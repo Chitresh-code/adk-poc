@@ -8,7 +8,7 @@ A set of agents built on Google's Agent Development Kit (ADK), each one handling
 - Keeping the CRM clean
 - Coaching sales calls
 
-Agents are added one at a time. See [`docs/plan.md`](docs/plan.md) for what's built, what's planned, and the architecture decisions that apply across all of them, [`docs/rfp-agent.md`](docs/rfp-agent.md) for how the RFP agent works, [`docs/account-research-agent.md`](docs/account-research-agent.md) for the account research and outreach agent, [`docs/churn-agent.md`](docs/churn-agent.md) for the CS churn and expansion agent, and [`docs/revops-agent.md`](docs/revops-agent.md) for the RevOps CRM hygiene and forecasting agent.
+Agents are added one at a time. See [`docs/plan.md`](docs/plan.md) for what's built, what's planned, and the architecture decisions that apply across all of them, [`docs/rfp-agent.md`](docs/rfp-agent.md) for how the RFP agent works, [`docs/account-research-agent.md`](docs/account-research-agent.md) for the account research and outreach agent, [`docs/churn-agent.md`](docs/churn-agent.md) for the CS churn and expansion agent, [`docs/revops-agent.md`](docs/revops-agent.md) for the RevOps CRM hygiene and forecasting agent, and [`docs/call-coaching-agent.md`](docs/call-coaching-agent.md) for the call analysis and coaching agent.
 
 ## Prerequisites
 
@@ -30,7 +30,7 @@ Then start everything:
 docker compose up --build
 ```
 
-Open `http://localhost:8080`. Compose starts the Pub/Sub emulator, waits for it to become healthy, publishes the five fixture buying signals once per emulator lifecycle, and starts ADK only after seeding succeeds. API keys are loaded from `agents/.env` at container runtime; the file, local virtual environments, ADK session data, and chromadb indexes are excluded from the image.
+Open `http://localhost:8080`. Compose starts the Pub/Sub and Firestore emulators, waits for both to become healthy, seeds the fixture buying signals and CRM records once per emulator lifecycle, and starts ADK only after both seeders succeed. API keys are loaded from `agents/.env` at container runtime; the file, local virtual environments, ADK session data, and chromadb indexes are excluded from the image. `call_coaching_agent`'s local Whisper model downloads from Hugging Face the first time you attach audio in a given container, so that first transcription needs outbound network access; the cache isn't persisted across `docker compose down`, so a fresh container re-downloads it once.
 
 The account research agent acknowledges the five signals when it processes them. To recreate the in-memory emulator and automatically seed a fresh batch:
 
@@ -81,9 +81,9 @@ cd agents
 uv run python account_research_agent/scripts/publish_fake_signals.py
 ```
 
-#### Firestore emulator (revops_agent only)
+#### Firestore emulator (revops_agent and call_coaching_agent)
 
-`revops_agent`'s CRM read step reads from a local Firestore emulator instead of a real CRM, see [`docs/revops-agent.md`](docs/revops-agent.md). It needs its own terminal, running alongside `adk web`:
+`revops_agent`'s CRM read step reads from a local Firestore emulator instead of a real CRM, see [`docs/revops-agent.md`](docs/revops-agent.md). `call_coaching_agent` reads and writes the same collections, matching calls against the same CRM data instead of seeding a second copy, see [`docs/call-coaching-agent.md`](docs/call-coaching-agent.md). It needs its own terminal, running alongside `adk web`:
 
 ```bash
 export PATH="$HOME/google-cloud-sdk/bin:/opt/homebrew/opt/openjdk/bin:$PATH"   # if not already on PATH
@@ -109,7 +109,7 @@ See `agents/.env.example` for the full list of variables.
 ## How it's organized
 
 - Each agent lives in its own folder under `agents/` with an `agent.py` that ADK's UI picks up automatically, so adding a new agent is just adding a new folder, no changes to how the UI runs.
-- Agents don't call out to real external systems (CRM, ticketing, call recording); each one reads seeded local data from its own `data/` folder instead, so the whole suite runs standalone without any accounts or credentials beyond a model API key.
+- Agents don't call out to real external SaaS systems (CRM, ticketing, call recording); each one reads seeded local data from its own `data/` folder instead, so the whole suite runs standalone without any accounts or credentials beyond a model API key. `call_coaching_agent`'s audio transcription is the one exception worth naming: it's real local model inference (faster-whisper), not a fixture, but it's local, not a hosted transcription API.
 
 ```text
 agents/
@@ -121,6 +121,7 @@ agents/
   account_research_agent/            # see docs/account-research-agent.md
   churn_agent/                       # see docs/churn-agent.md
   revops_agent/                      # see docs/revops-agent.md
+  call_coaching_agent/               # see docs/call-coaching-agent.md
   tests/                             # live end-to-end tests, one per agent, see Tests below
 docs/
   plan.md                     # roadmap and architecture decisions
@@ -128,6 +129,7 @@ docs/
   account-research-agent.md   # account research agent design and walkthrough
   churn-agent.md              # CS churn and expansion agent design and walkthrough
   revops-agent.md             # RevOps CRM hygiene and forecasting agent design and walkthrough
+  call-coaching-agent.md      # call analysis and coaching agent design and walkthrough
 ```
 
 ## Tests
@@ -141,7 +143,7 @@ Two layers:
   uv run python rfp_agent/tests/test_tools.py
   ```
 
-- **Live, end-to-end runs** against real APIs, real model calls included: `agents/tests/`, one `test_<agent>.py` per agent plus `run_all.py` to run every one and print a summary. These spend real quota (each full run is roughly 5 model calls) and, for `account_research_agent`, need a running Pub/Sub emulator; they skip cleanly instead of failing when a prerequisite isn't met. Not something to run on every save.
+- **Live, end-to-end runs** against real APIs, real model calls included: `agents/tests/`, one `test_<agent>.py` per agent plus `run_all.py` to run every one and print a summary. These spend real quota (most full runs are roughly 5 model calls; `call_coaching_agent`'s is 2) and need a running Pub/Sub emulator (`account_research_agent`) or Firestore emulator (`revops_agent`, `call_coaching_agent`); they skip cleanly instead of failing when a prerequisite isn't met. `call_coaching_agent`'s test also runs a real local Whisper transcription (no API key needed for that part) if a `say`-style TTS command is available to synthesize a throwaway clip. Not something to run on every save.
 
   ```bash
   cd agents

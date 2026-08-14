@@ -10,7 +10,7 @@ Agents are built one at a time: each one has to actually work end to end in `adk
 | 2 | Account Research & Outreach | Watches for buying signals, researches accounts, maps buyers, and drafts personalized outreach for a rep to approve before anything gets sent. | **built, Pub/Sub emulator round trip verified, live model run not yet verified**, see [account-research-agent.md](account-research-agent.md) |
 | 3 | CS Churn & Expansion | Watches product usage, support tickets, and sentiment, flags churn risk early, and drafts QBR prep and cross-sell notes. | **built, verified end to end against a live model call**, see [churn-agent.md](churn-agent.md) |
 | 4 | RevOps CRM Hygiene & Forecasting | Sweeps the CRM for missing, stale, or duplicate data, flags stalled deals, and sharpens the forecast, starting read-only and earning write access over time. | **built, verified end to end against a live model call and the Firestore emulator**, see [revops-agent.md](revops-agent.md) |
-| 5 | Call Analysis & Coaching | Transcribes and scores sales calls against a methodology, surfaces competitor mentions and deal risks, and updates the CRM. | not started |
+| 5 | Call Analysis & Coaching | Transcribes and scores sales calls against a methodology, surfaces competitor mentions and deal risks, and updates the CRM. | **built, verified end to end against a live model call, local Whisper transcription, and the Firestore emulator**, see [call-coaching-agent.md](call-coaching-agent.md) |
 
 Each agent gets its own doc under `docs/` when its turn comes, following the same template as agent 1's.
 
@@ -83,7 +83,16 @@ agents/
       seed_firestore.py          # loads the fixtures into the Firestore emulator
     tests/
       test_tools.py
-  (call_coaching_agent/: later)
+  call_coaching_agent/
+    agent.py                # same SequentialAgent shape, see agent-5 doc
+    tools/
+      intake.py                # load_call(), local faster-whisper transcription
+      crm.py                     # load_deal_context(), reads revops_agent's Firestore collections
+      packaging.py                # update_crm_and_package(), the pipeline's one write
+    data/
+      fixtures/                    # sample call transcripts, text only
+    tests/
+      test_tools.py
 docs/
   plan.md                # this file
   rfp-agent.md
@@ -94,6 +103,10 @@ docs/
 - None of the agents get wired to a real Salesforce, Gong, Zendesk, or HubSpot instance; there isn't one to point at, and OAuth plumbing is a lot of work that buys nothing at this stage.
 - Every agent reads seeded local fixtures (CSV/JSON/markdown) that look like CRM records, call transcripts, usage events, and so on, standing in for what a live integration would return.
 - This is documented clearly rather than left for someone to assume it's live.
+- Exception, not a contradiction: Agent 5's audio transcription is real, local model inference
+  (faster-whisper, open Whisper weights), not a fixture standing in for one. What's still fixture
+  data is the CRM it matches calls against and the sample call transcripts shipped in `data/`; no
+  agent calls a hosted transcription API (Gong, Otter, or otherwise).
 
 **Local Docker startup**:
 
@@ -103,7 +116,7 @@ docs/
 
 **Google Cloud emulators**: what's actually real, what's emulated, what's skipped. Gemini itself has no local emulator; every agent always calls the real API, that part can't be faked. Emulators only make sense for the infra around the model:
 
-- **Firestore emulator** (`gcloud emulators firestore start`): stands in for the system of record starting at Agent 4 (RevOps CRM hygiene), where the read-only-then-write story is the whole point. Agent 3 can reuse it for account state if useful.
+- **Firestore emulator** (`gcloud emulators firestore start`): stands in for the system of record starting at Agent 4 (RevOps CRM hygiene), where the read-only-then-write story is the whole point. Agent 3 can reuse it for account state if useful. Agent 5 reads the same collections Agent 4 seeds rather than standing up a second copy, and is the one that actually writes to a deal record, not just reads.
 - **Pub/Sub emulator** (`gcloud beta emulators pubsub start`, still under the beta command track as of gcloud 580.0.0; needs a real Java 7+ JRE on `PATH`, macOS's bundled `java` stub doesn't count, `brew install openjdk` if `java -version` fails): stands in for a buying-signal event stream starting at Agent 2; a small local script publishes fake signals instead of a real intent-data vendor.
 - **Agent 1 uses neither.** It's local files in, drafted answers out: no database, no message queue, no state that needs to survive between runs. That's not a gap to fill later, it's the correct amount of infra for what the agent does.
 
